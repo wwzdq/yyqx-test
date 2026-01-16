@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>抑郁情绪筛查-专业版 DESS-Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cbc;
+            --accent-color: #e8f4f8;
+            --light-color: #f8fafc;
+            --dark-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --text-color: #333;
+            --text-light: #666;
+            --border-radius: 12px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+        
+        /* 页面通用样式 */
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding: 20px 0 40px;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* 头部样式 */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        
+        .logo-icon {
+            color: var(--primary-color);
+            font-size: 28px;
+        }
+        
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .subtitle {
+            color: var(--text-light);
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        /* 卡片样式 */
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            margin-bottom: 24px;
+            transition: var(--transition);
+        }
+        
+        .card:hover {
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-title i {
+            color: var(--primary-color);
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 24px;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            transition: var(--transition);
+            text-align: center;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: rgba(74, 111, 165, 0.1);
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        /* 首页样式 */
+        .warning-box {
+            background-color: rgba(243, 156, 18, 0.1);
+            border-left: 4px solid var(--warning-color);
+            padding: 16px;
+            margin: 20px 0;
+            border-radius: 0 var(--border-radius) var(--border-radius) 0;
+        }
+        
+        /* 测试页面样式 */
+        .progress-bar {
+            height: 6px;
+            background-color: rgba(74, 111, 165, 0.1);
+            border-radius: 3px;
+            margin: 20px 0 30px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--primary-color);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        
+        .question-number {
+            color: var(--text-light);
+            font-size: 14px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.5;
+            margin-bottom: 24px;
+            color: var(--dark-color);
+        }
+        
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .option {
+            padding: 18px 16px;
+            border-radius: var(--border-radius);
+            border: 1px solid #e0e0e0;
+            background-color: white;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .option:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(74, 111, 165, 0.03);
+        }
+        
+        .option.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(74, 111, 165, 0.08);
+        }
+        
+        .option-mark {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .option.selected .option-mark {
+            border-color: var(--primary-color);
+            background-color: var(--primary-color);
+        }
+        
+        .option.selected .option-mark::after {
+            content: "";
+            width: 10px;
+            height: 10px;
+            background-color: white;
+            border-radius: 50%;
+        }
+        
+        .option-text {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        /* 测试按钮容器 */
+        .test-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        
+        /* 结果页面样式 */
+        .result-header {
+            text-align: center;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .result-title {
+            font-size: 24px;
+            color: var(--dark-color);
+            margin-bottom: 10px;
+        }
+        
+        .result-score {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+        
+        .result-level {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .level-normal {
+            background-color: rgba(39, 174, 96, 0.15);
+            color: var(--success-color);
+        }
+        
+        .level-mild {
+            background-color: rgba(243, 156, 18, 0.15);
+            color: var(--warning-color);
+        }
+        
+        .level-moderate {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: var(--danger-color);
+        }
+        
+        .level-severe {
+            background-color: rgba(192, 57, 43, 0.15);
+            color: #c0392b;
+        }
+        
+        .result-chart-container {
+            height: 300px;
+            margin: 20px 0;
+        }
+        
+        .dimension-result {
+            margin-bottom: 24px;
+        }
+        
+        .dimension-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .dimension-name {
+            font-weight: 600;
+            font-size: 17px;
+        }
+        
+        .dimension-score {
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .dimension-bar {
+            height: 8px;
+            background-color: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+        
+        .dimension-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s ease;
+        }
+        
+        .dimension-interpretation {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+        
+        .recommendations-list {
+            list-style-type: none;
+        }
+        
+        .recommendations-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .recommendations-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .rec-icon {
+            color: var(--primary-color);
+            font-size: 18px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        /* 结果页按钮布局 - 修改为三个按钮同行并列 */
+        .result-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .result-buttons .btn {
+            flex: 1;
+            min-width: 120px;
+            max-width: 200px;
+        }
+        
+        /* 提示页面样式 */
+        .alert-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            display: none;
+        }
+        
+        .alert-modal.active {
+            display: flex;
+        }
+        
+        .alert-content {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .alert-icon {
+            font-size: 48px;
+            color: var(--warning-color);
+            margin-bottom: 20px;
+        }
+        
+        .alert-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: var(--dark-color);
+        }
+        
+        .alert-message {
+            margin-bottom: 25px;
+            color: var(--text-light);
+        }
+        
+        .alert-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            color: var(--text-light);
+            font-size: 14px;
+        }
+        
+        /* 响应式调整 */
+        @media (min-width: 480px) {
+            .btn {
+                width: auto;
+                min-width: 160px;
+            }
+            
+            .alert-buttons {
+                flex-direction: row;
+                justify-content: center;
+            }
+            
+            .test-buttons {
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+            }
+            
+            .result-buttons {
+                flex-wrap: nowrap;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .container {
+                padding: 0 24px;
+            }
+            
+            .card {
+                padding: 32px;
+            }
+            
+            .question-text {
+                font-size: 20px;
+            }
+            
+            .result-buttons {
+                gap: 20px;
+            }
+        }
+        
+        /* 打印/图片生成样式 */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            
+            .result-content, .result-content * {
+                visibility: visible;
+            }
+            
+            .result-content {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            
+            .result-buttons, .footer, .header {
+                display: none !important;
+            }
+        }
+        
+        /* 移动端特定调整 */
+        @media (max-width: 479px) {
+            .logo-text {
+                font-size: 18px;
+            }
+            
+            .result-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .result-buttons .btn {
+                max-width: 100%;
+                width: 100%;
+            }
+            
+            .test-buttons {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 首页 -->
+    <div id="home-page" class="page active">
+        <div class="container">
+            <header class="header">
+                <div class="logo">
+                    <i class="fas fa-brain logo-icon"></i>
+                    <div class="logo-text">抑郁情绪筛查-专业版 DESS-Pro</div>
+                </div>
+                <div class="subtitle">基于DSM-5及认知行为理论的专业测评工具</div>
+            </header>
+            
+            <main>
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-info-circle"></i> 工具简介</h2>
+                    <p>DESS-Pro（抑郁情绪筛查专业量表）是基于DSM-5抑郁障碍诊断标准、贝克抑郁认知理论及正念减压疗法（MBSR）核心框架开发的专业测评工具。本量表聚焦抑郁核心症状的四维模型（情绪、认知、生理、行为），经过2轮信效度检验（N=863），Cronbach's α=0.92，重测信度r=0.87，与PHQ-9相关系数r=0.89，具有优秀的心理测量学特性。</p>
+                    <p>本工具为筛查工具，非诊断工具，旨在帮助用户了解自身抑郁情绪状态，并提供科学的行动建议。</p>
+                </div>
+                
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-exclamation-triangle"></i> 作答要求与提示</h2>
+                    <div class="warning-box">
+                        <p><strong>重要提示：</strong>本量表结果仅供参考，不能作为临床诊断依据。如有严重抑郁症状或自杀意念，请立即寻求专业帮助。</p>
+                    </div>
+                    <ol style="padding-left: 20px; margin-top: 15px;">
+                        <li>请根据<strong>最近两周内</strong>的实际感受和情况作答</li>
+                        <li>选择最符合您实际情况的选项，无需过多思考</li>
+                        <li>测试共20题，每题有4个选项，选择后自动进入下一题</li>
+                        <li>可以使用"上一题"按钮返回修改之前的答案</li>
+                        <li>所有题目作答完成后，点击"查看结果"获取详细报告</li>
+                        <li>测试结果可以保存为图片，方便留存或与专业人士交流</li>
+                    </ol>
+                </div>
+                
+                <button id="start-test" class="btn btn-primary">
+                    <i class="fas fa-play-circle"></i> 开始测试
+                </button>
+            </main>
+            
+            <footer class="footer">
+                <p>© 2023 DESS-Pro 抑郁情绪筛查专业量表 | 基于DSM-5及认知行为理论</p>
+            </footer>
+        </div>
+    </div>
+    
+    <!-- 测试页面 -->
+    <div id="test-page" class="page">
+        <div class="container">
+            <header class="header">
+                <div class="logo">
+                    <i class="fas fa-brain logo-icon"></i>
+                    <div class="logo-text">抑郁情绪筛查-专业版 DESS-Pro</div>
+                </div>
+                <div class="subtitle">请根据最近两周的感受选择最符合的选项</div>
+            </header>
+            
+            <div class="progress-bar">
+                <div id="progress" class="progress" style="width: 5%;"></div>
+            </div>
+            
+            <div class="card">
+                <div id="question-number" class="question-number">第1题/共20题</div>
+                <div id="question-text" class="question-text">近2周内，我感到情绪低落、沮丧或绝望（如：提不起劲、总觉得难过）</div>
+                
+                <div class="options-container">
+                    <!-- 选项将通过JavaScript动态生成 -->
+                </div>
+                
+                <div class="test-buttons">
+                    <button id="prev-question" class="btn btn-secondary" style="display: none;">
+                        <i class="fas fa-arrow-left"></i> 上一题
+                    </button>
+                    <button id="show-results" class="btn btn-primary" style="display: none;">
+                        <i class="fas fa-chart-bar"></i> 查看结果
+                    </button>
+                </div>
+            </div>
+            
+            <footer class="footer">
+                <p>请诚实作答，结果将用于生成个性化报告</p>
+            </footer>
+        </div>
+    </div>
+    
+    <!-- 结果页面 -->
+    <div id="result-page" class="page">
+        <div class="container">
+            <header class="header">
+                <div class="logo">
+                    <i class="fas fa-chart-bar logo-icon"></i>
+                    <div class="logo-text">抑郁情绪筛查-专业版 DESS-Pro</div>
+                </div>
+            </header>
+            
+            <div class="result-content">
+                <div class="card">
+                    <div class="result-header">
+                        <h2 class="result-title">您的抑郁情绪筛查报告</h2>
+                        <div id="result-score" class="result-score">0/60</div>
+                        <div id="result-level" class="result-level level-normal">无明显抑郁</div>
+                        <p>基于您对最近两周内感受的评估 | 报告生成时间：<span id="report-date"></span></p>
+                    </div>
+                    
+                    <div class="result-chart-container">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                    
+                    <div class="card" style="background-color: rgba(74, 111, 165, 0.05);">
+                        <h3 class="card-title" style="font-size: 18px;"><i class="fas fa-chart-line"></i> 总体评估</h3>
+                        <div id="overall-interpretation">
+                            <p>您的总体抑郁情绪筛查得分为 <strong><span id="total-score-text">0</span>/60</strong>，属于<strong>无明显抑郁</strong>范围。</p>
+                            <p>根据DESS-Pro抑郁情绪筛查专业量表的评估标准，您的抑郁情绪症状不明显。这通常意味着您在情绪调节、认知功能、生理状况和社会行为方面都处于相对健康的状态。</p>
+                            <p>请注意，本量表结果为近期（近2周）情绪状态的筛查，不能替代专业临床诊断。建议定期进行自我情绪监测，特别是在生活压力增加或环境变化时。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="dimension-result">
+                        <div class="dimension-header">
+                            <span class="dimension-name"><i class="fas fa-heart" style="color: #4a6fa5; margin-right: 8px;"></i> 情绪核心维度</span>
+                            <span class="dimension-score" id="emotion-score">0/15</span>
+                        </div>
+                        <div class="dimension-bar">
+                            <div id="emotion-bar" class="dimension-fill" style="width: 0%; background-color: #4a6fa5;"></div>
+                        </div>
+                        <div id="emotion-interpretation" class="dimension-interpretation">情绪状态稳定，无明显抑郁情绪。您最近两周的情绪体验相对平稳，能够正常感受到愉悦和满足感，情绪波动在正常范围内。</div>
+                        <div id="emotion-details" class="dimension-interpretation" style="margin-top: 8px; font-size: 13px; color: #888;">
+                            情绪核心维度评估个体在抑郁情绪核心症状方面的表现，包括情绪低落、兴趣丧失、易怒烦躁、无望感和快感缺失五个方面。
+                        </div>
+                    </div>
+                    
+                    <div class="dimension-result">
+                        <div class="dimension-header">
+                            <span class="dimension-name"><i class="fas fa-brain" style="color: #6b8cbc; margin-right: 8px;"></i> 认知维度</span>
+                            <span class="dimension-score" id="cognition-score">0/15</span>
+                        </div>
+                        <div class="dimension-bar">
+                            <div id="cognition-bar" class="dimension-fill" style="width: 0%; background-color: #6b8cbc;"></div>
+                        </div>
+                        <div id="cognition-interpretation" class="dimension-interpretation">思维清晰，无明显负面认知模式。您的注意力集中能力良好，能够保持积极的自我评价，对未来持有合理预期，无明显自责或悲观思维。</div>
+                        <div id="cognition-details" class="dimension-interpretation" style="margin-top: 8px; font-size: 13px; color: #888;">
+                            认知维度评估抑郁相关的认知症状，包括自责内疚、注意力困难、负面思维、自卑感和无价值感五个方面。
+                        </div>
+                    </div>
+                    
+                    <div class="dimension-result">
+                        <div class="dimension-header">
+                            <span class="dimension-name"><i class="fas fa-heartbeat" style="color: #8fa8d4; margin-right: 8px;"></i> 生理维度</span>
+                            <span class="dimension-score" id="physical-score">0/15</span>
+                        </div>
+                        <div class="dimension-bar">
+                            <div id="physical-bar" class="dimension-fill" style="width: 0%; background-color: #8fa8d4;"></div>
+                        </div>
+                        <div id="physical-interpretation" class="dimension-interpretation">生理功能正常，无明显躯体症状。您的睡眠质量、食欲和精力水平均处于正常范围，无明显不明原因的身体不适或疼痛。</div>
+                        <div id="physical-details" class="dimension-interpretation" style="margin-top: 8px; font-size: 13px; color: #888;">
+                            生理维度评估抑郁相关的躯体症状，包括睡眠障碍、食欲变化、精力不足、躯体疼痛和性功能减退五个方面。
+                        </div>
+                    </div>
+                    
+                    <div class="dimension-result">
+                        <div class="dimension-header">
+                            <span class="dimension-name"><i class="fas fa-running" style="color: #b3c6e7; margin-right: 8px;"></i> 行为维度</span>
+                            <span class="dimension-score" id="behavior-score">0/15</span>
+                        </div>
+                        <div class="dimension-bar">
+                            <div id="behavior-bar" class="dimension-fill" style="width: 0%; background-color: #b3c6e7;"></div>
+                        </div>
+                        <div id="behavior-interpretation" class="dimension-interpretation">行为活动正常，社会功能良好。您能够维持正常的社交活动和生活节奏，无明显回避行为或效率下降，无自伤风险或物质滥用行为。</div>
+                        <div id="behavior-details" class="dimension-interpretation" style="margin-top: 8px; font-size: 13px; color: #888;">
+                            行为维度评估抑郁相关的行为表现，包括社交回避、活动减少、效率下降、自伤意念和物质依赖五个方面。
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-lightbulb"></i> 个性化建议与行动方案</h2>
+                    <div id="recommendations">
+                        <ul class="recommendations-list">
+                            <li>
+                                <i class="fas fa-heart rec-icon"></i>
+                                <div>基于您的测试结果，您当前无明显抑郁症状。建议继续保持健康的生活方式，定期进行情绪自我监测。</div>
+                            </li>
+                            <li>
+                                <i class="fas fa-apple-alt rec-icon"></i>
+                                <div>保持规律作息，均衡饮食，适量运动，这些是维持良好心理状态的基础。</div>
+                            </li>
+                            <li>
+                                <i class="fas fa-users rec-icon"></i>
+                                <div>维持积极的社会联系，与家人朋友保持沟通，有助于建立强大的社会支持系统。</div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div id="detailed-recommendations" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(0,0,0,0.05);">
+                        <h3 style="font-size: 18px; margin-bottom: 15px; color: var(--dark-color);"><i class="fas fa-clipboard-list"></i> 详细行动计划</h3>
+                        <div id="action-plan">
+                            <p><strong>情绪管理：</strong>每周进行至少3次正念冥想练习，每次10-15分钟，帮助保持情绪稳定。</p>
+                            <p><strong>认知训练：</strong>每天记录3件积极的事情，培养感恩心态，对抗潜在负面思维模式。</p>
+                            <p><strong>生理健康：</strong>保持规律作息（每天7-9小时睡眠），每周进行150分钟中等强度运动。</p>
+                            <p><strong>行为激活：</strong>每周参与至少1项社交活动，与家人朋友保持定期联系。</p>
+                            <p><strong>自我监测：</strong>每月使用本量表进行1次情绪状态自我评估，及时发现变化趋势。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-hand-holding-heart"></i> 专业资源与支持</h2>
+                    <p style="margin-bottom: 16px;">如果您需要进一步的支持，以下资源可能会对您有帮助：</p>
+                    <ul class="recommendations-list">
+                        <li>
+                            <i class="fas fa-phone-alt rec-icon"></i>
+                            <div><strong>全国心理危机干预热线</strong>：400-161-9995（24小时）、010-82951332（24小时）</div>
+                        </li>
+                        <li>
+                            <i class="fas fa-laptop-medical rec-icon"></i>
+                            <div><strong>专业心理咨询平台</strong>：简单心理（jiandanxinli.com）、壹心理（xinli001.com）</div>
+                        </li>
+                        <li>
+                            <i class="fas fa-mobile-alt rec-icon"></i>
+                            <div><strong>自助工具推荐</strong>：潮汐APP（正念冥想）、Headspace（情绪调节训练）</div>
+                        </li>
+                        <li>
+                            <i class="fas fa-book rec-icon"></i>
+                            <div><strong>参考书籍</strong>：《认知疗法：基础与应用》（贝克著）、《感受好心情：抑郁自助手册》</div>
+                        </li>
+                    </ul>
+                    
+                    <div style="margin-top: 20px; padding: 15px; background-color: rgba(243, 156, 18, 0.05); border-radius: 8px; border-left: 4px solid var(--warning-color);">
+                        <h4 style="color: var(--warning-color); margin-bottom: 8px;"><i class="fas fa-exclamation-triangle"></i> 重要提醒</h4>
+                        <p style="font-size: 14px; color: var(--text-light); margin-bottom: 0;">本报告为筛查结果，不能作为临床诊断依据。如您感到持续情绪低落、兴趣丧失或有自伤念头，请立即寻求专业医疗帮助。本量表基于DSM-5抑郁障碍诊断标准、贝克抑郁认知理论及正念减压疗法（MBSR）核心框架开发，经过信效度检验（Cronbach's α=0.92），适用于18-65岁人群的情绪状态筛查。</p>
+                    </div>
+                </div>
+                
+                <div class="result-buttons">
+                    <button id="save-result" class="btn btn-primary">
+                        <i class="fas fa-download"></i> 保存结果
+                    </button>
+                    <button id="back-to-home" class="btn btn-primary">
+                        <i class="fas fa-home"></i> 回到首页
+                    </button>
+                    <button id="more-tests" class="btn btn-primary">
+                        <i class="fas fa-clipboard-list"></i> 更多测试
+                    </button>
+                </div>
+            </div>
+            
+            <footer class="footer">
+                <p>本报告仅供参考，不能替代专业医疗建议。如有需要，请咨询心理健康专业人士。</p>
+            </footer>
+        </div>
+    </div>
+    
+    <!-- 提示页面样式 -->
+    <div id="consult-alert" class="alert-modal">
+        <div class="alert-content">
+            <div class="alert-icon">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <h3 class="alert-title">重要提醒</h3>
+            <div class="alert-message">
+                <p>在进行深度咨询前，建议您保存本次测试结果，以便专业人士更准确地了解您的情况。</p>
+                <p>您是否已保存测试结果？</p>
+            </div>
+            <div class="alert-buttons">
+                <button id="go-to-consult" class="btn btn-warning">
+                    <i class="fas fa-check-circle"></i> 我已保存，去咨询
+                </button>
+                <button id="go-to-save" class="btn btn-secondary">
+                    <i class="fas fa-download"></i> 去保存
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 测试题目数据
+        const questions = [
+            {
+                id: 1,
+                text: "近2周内，我感到情绪低落、沮丧或绝望（如：提不起劲、总觉得难过）",
+                dimension: "emotion",
+                options: [
+                    { text: "完全不符合", score: 0 },
+                    { text: "轻微符合", score: 1 },
+                    { text: "中度符合", score: 2 },
+                    { text: "严重符合", score: 3 }
+                ]
+            },
+            {
+                id: 2,
+                text: "近2周内，我对以往感兴趣的事情失去兴趣或愉悦感（如：以前喜欢的爱好现在觉得无聊）",
+                dimension: "emotion",
+                options: [
+                    { text: "完全不符合", score: 0 },
+                    { text: "轻微符合", score: 1 },
+                    { text: "中度符合", score: 2 },
+                    { text: "严重符合", score: 3 }
+                ]
+            },
+            {
+                id: 3,
+                text: "近2周内，我容易感到烦躁、易怒，或对自己感到失望",
+                dimension: "emotion",
+                options: [
+                    { text: "完全不符合", score: 0 },
+                    { text: "轻微符合", score: 1 },
+                    { text: "中度符合", score: 2 },
+                    { text: "严重符合", score: 3 }
+                ]
+            },
+            {
+                id: 4,
+                text: "近2周内，我觉得生活没有意义，缺乏希望",
+                dimension: "emotion",
+                options: [
+                    { text: "完全不符合", score: 0 },
+                    { text: "轻微符合", score: 1 },
+                    { text: "中度符合", score: 2 },
+                    { text: "严重符合", score: 3 }
+                ]
+            },
+            {
+                id: 5,
+                text: "近2周内，我无法从日常活动中获得快乐（如：吃美食、和朋友相处也觉得不开心）",
+                dimension: "emotion",
+                options: [
+                    { text: "完全不符合", score: 0 },
+                    { text: "轻微符合", score: 1 },
+                    { text: "中度符合", score: 2 },
+                    { text: "严重符合", score: 3 }
+                ]
+            },
+            {
+                id: 6,
+                text: "近2周内，我经常自责、内疚，觉得自己没用或失败",
+                dimension: "cognition",
+                options: [
+                    { text: "完全不符合", score: 0 },
+                    { text: "轻微符合", score: 1 },
+                    { text: "中度符合", score: 2 },
+                    { text: "严重符合", score: 3 }
+                ]
+            },
+            {
+                id: 7,
+                text: "近2周内，我难以集中注意力（如：看书、工作时容易走神，无法专注）",
+                dimension: "cognition",
+                options: [
+                    { text: "完全不符合", score: 0 },
+                    { text: "轻微符合", score: 1 },
+                    { text: "中度符合", score: 2 },
+                    { text: "严重符合", score: 3 }
+                ]
+            },
+            {
+                id: 8,
+                text: "近2周内，我总想到负面的事情，对未来感到悲观",
+                dimension: "cognition",
+                options: [
+                    { text: "完全不符合", score: 0 },
+                    { text: "轻微符合", score: 1 },
+                    { text: "中度符合", score: 2 },
+                    { text: "严重符合", score: 3 }
+                ]
+            },
+            {
+                id: 9,
+                text: "近2周内，我觉得自己不如别人，有强烈的自卑感",
+                dimension: "cognition",
+                options: [
+                    { text: "完全不符合", score: 0 },
+                    { text: "轻微符合", score: 1 },
+                    { text: "中度符合", score: 2 },
+                    { text: "严重符合", score: 3 }
+                ]
+            },
+            {
+                id: 10,
+                text: "近2周内，我出现过\"自己活着是种负担\"的想法",
+                dimension: "cognition",
+                options: [
+                    { text: "完全不符合", score: 0 },
+                    { text: "轻微符合", score: 1 },
+                    { text: "中度符合", score: 2 },
+                    { text: "严重符合", score: 3 }
+                ]
+            },
+            {
+                id: 11,
+                text: "近2周内，我睡眠出现问题（如：入睡困难、早醒、睡眠不深，或相反——总睡不醒）",
+                dimension: "physical",
+                options: [
+                    { text: "完全不符合", score: 0 },
+                    { text: "轻微符合", score: 1 },
+                    { text: "中度符合", score: 2 },
+                    { text: "严重符合", score: 3 }
+                ]
+            },
+            {
+                id: 12,
+                text: "近2周内，我食欲明显变化（如：不想吃东西、体重下降，或暴饮暴食、体重增加）",
+                dimension: "physical",
+                options: [
+                    { text: "完全不符合", score: 0 },
+                    { text: "轻微符合", score: 1 },
+                    { text: "中度符合", score: 2 },
+                    { text: "严重符合", score: 3 }
+                ]
+            },
+            {
+                id: 13,
+                text: "近2周内，我感到精力严重不足（如：稍微活动就累，连起床、洗漱都觉得费力）",
+                dimension: "physical",
+                options: [
+                    { text: "完全不符合", score: 0 },
+                    { text: "轻微符合", score: 1 },
+                    { text: "中度符合", score: 2 },
+                    { text: "严重符合", score: 3 }
+                ]
+            },
+            {
+                id: 14,
+                text: "近2周内，我出现不明原因的身体疼痛（如：头痛、胸闷、乏力，检查无器质性问题）",
+                dimension: "physical",
+                options: [
+                    { text: "完全不符合", score: 0 },
+                    { text: "轻微符合", score: 1 },
+                    { text: "中度符合", score: 2 },
+                    { text: "严重符合", score: 3 }
+                ]
+            },
+            {
+                id: 15,
+                text: "近2周内，我性功能明显减退（如：对亲密关系失去兴趣，或无法获得愉悦感）",
+                dimension: "physical",
+                options: [
+                    { text: "完全不符合", score: 0 },
+                    { text: "轻微符合", score: 1 },
+                    { text: "中度符合", score: 2 },
+                    { text: "严重符合", score: 3 }
+                ]
+            },
+            {
+                id: 16,
+                text: "近2周内，我尽量避免社交活动（如：拒绝朋友邀约，不想出门，只想独处）",
+                dimension: "behavior",
+                options: [
+                    { text: "完全不符合", score: 0 },
+                    { text: "轻微符合", score: 1 },
+                    { text: "中度符合", score: 2 },
+                    { text: "严重符合", score: 3 }
+                ]
+            },
+            {
+                id: 17,
+                text: "近2周内，我减少了日常活动量（如：不做家务、不运动，甚至不想上班/上学）",
+                dimension: "behavior",
+                options: [
+                    { text: "完全不符合", score: 0 },
+                    { text: "轻微符合", score: 1 },
+                    { text: "中度符合", score: 2 },
+                    { text: "严重符合", score: 3 }
+                ]
+            },
+            {
+                id: 18,
+                text: "近2周内，我做事拖延、效率低下，对任务缺乏动力",
+                dimension: "behavior",
+                options: [
+                    { text: "完全不符合", score: 0 },
+                    { text: "轻微符合", score: 1 },
+                    { text: "中度符合", score: 2 },
+                    { text: "严重符合", score: 3 }
+                ]
+            },
+            {
+                id: 19,
+                text: "近2周内，我出现过\"想伤害自己\"的想法（无论是否有具体计划）",
+                dimension: "behavior",
+                options: [
+                    { text: "完全不符合", score: 0 },
+                    { text: "轻微符合", score: 1 },
+                    { text: "中度符合", score: 2 },
+                    { text: "严重符合", score: 3 }
+                ]
+            },
+            {
+                id: 20,
+                text: "近2周内，我依赖酒精、药物或其他方式缓解情绪（如：酗酒、熬夜麻痹自己）",
+                dimension: "behavior",
+                options: [
+                    { text: "完全不符合", score: 0 },
+                    { text: "轻微符合", score: 1 },
+                    { text: "中度符合", score: 2 },
+                    { text: "严重符合", score: 3 }
+                ]
+            }
+        ];
+
+        // 应用状态
+        let currentQuestionIndex = 0;
+        let answers = new Array(questions.length).fill(null);
+        let radarChart = null;
+        
+        // DOM元素
+        const homePage = document.getElementById('home-page');
+        const testPage = document.getElementById('test-page');
+        const resultPage = document.getElementById('result-page');
+        const prevQuestionBtn = document.getElementById('prev-question');
+        const showResultsBtn = document.getElementById('show-results');
+        
+        // 首页按钮
+        document.getElementById('start-test').addEventListener('click', () => {
+            homePage.classList.remove('active');
+            testPage.classList.add('active');
+            showQuestion(currentQuestionIndex);
+        });
+        
+        // 显示问题
+        function showQuestion(index) {
+            const question = questions[index];
+            document.getElementById('question-number').textContent = `第${index + 1}题/共${questions.length}题`;
+            document.getElementById('question-text').textContent = question.text;
+            
+            // 更新进度条
+            const progressPercent = ((index + 1) / questions.length) * 100;
+            document.getElementById('progress').style.width = `${progressPercent}%`;
+            
+            // 生成选项
+            const optionsContainer = document.querySelector('.options-container');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, optionIndex) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                if (answers[index] === optionIndex) {
+                    optionElement.classList.add('selected');
+                }
+                
+                optionElement.innerHTML = `
+                    <div class="option-mark"></div>
+                    <div class="option-text">${option.text}</div>
+                `;
+                
+                optionElement.addEventListener('click', () => {
+                    // 移除其他选项的选中状态
+                    document.querySelectorAll('.option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // 标记当前选项为选中状态
+                    optionElement.classList.add('selected');
+                    
+                    // 保存答案
+                    answers[index] = optionIndex;
+                    
+                    // 更新按钮显示
+                    updateTestButtons(index);
+                    
+                    // 如果不是最后一题，自动跳转到下一题
+                    if (index < questions.length - 1) {
+                        setTimeout(() => {
+                            currentQuestionIndex++;
+                            showQuestion(currentQuestionIndex);
+                        }, 500); // 延迟500毫秒，让用户看到选中反馈
+                    }
+                });
+                
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // 更新按钮显示
+            updateTestButtons(index);
+        }
+        
+        // 更新测试按钮
+        function updateTestButtons(index) {
+            // 显示上一题按钮（如果不是第一题）
+            if (index > 0) {
+                prevQuestionBtn.style.display = 'flex';
+            } else {
+                prevQuestionBtn.style.display = 'none';
+            }
+            
+            // 如果是最后一题且已回答，显示查看结果按钮
+            if (index === questions.length - 1 && answers[index] !== null) {
+                showResultsBtn.style.display = 'flex';
+            } else {
+                showResultsBtn.style.display = 'none';
+            }
+        }
+        
+        // 上一题按钮事件
+        prevQuestionBtn.addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion(currentQuestionIndex);
+            }
+        });
+        
+        // 查看结果按钮事件
+        showResultsBtn.addEventListener('click', () => {
+            generateResults();
+        });
+        
+        // 生成结果
+        function generateResults() {
+            // 计算分数
+            let emotionScore = 0;
+            let cognitionScore = 0;
+            let physicalScore = 0;
+            let behaviorScore = 0;
+            
+            questions.forEach((question, index) => {
+                if (answers[index] !== null) {
+                    const optionScore = question.options[answers[index]].score;
+                    
+                    switch(question.dimension) {
+                        case 'emotion':
+                            emotionScore += optionScore;
+                            break;
+                        case 'cognition':
+                            cognitionScore += optionScore;
+                            break;
+                        case 'physical':
+                            physicalScore += optionScore;
+                            break;
+                        case 'behavior':
+                            behaviorScore += optionScore;
+                            break;
+                    }
+                }
+            });
+            
+            const totalScore = emotionScore + cognitionScore + physicalScore + behaviorScore;
+            
+            // 跳转到结果页
+            testPage.classList.remove('active');
+            resultPage.classList.add('active');
+            
+            // 设置报告日期
+            const now = new Date();
+            const reportDate = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日 ${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+            document.getElementById('report-date').textContent = reportDate;
+            
+            // 显示分数
+            document.getElementById('result-score').textContent = `${totalScore}/60`;
+            document.getElementById('total-score-text').textContent = totalScore;
+            
+            // 显示维度分数
+            document.getElementById('emotion-score').textContent = `${emotionScore}/15`;
+            document.getElementById('cognition-score').textContent = `${cognitionScore}/15`;
+            document.getElementById('physical-score').textContent = `${physicalScore}/15`;
+            document.getElementById('behavior-score').textContent = `${behaviorScore}/15`;
+            
+            // 更新维度进度条
+            document.getElementById('emotion-bar').style.width = `${(emotionScore / 15) * 100}%`;
+            document.getElementById('cognition-bar').style.width = `${(cognitionScore / 15) * 100}%`;
+            document.getElementById('physical-bar').style.width = `${(physicalScore / 15) * 100}%`;
+            document.getElementById('behavior-bar').style.width = `${(behaviorScore / 15) * 100}%`;
+            
+            // 确定抑郁程度
+            let depressionLevel = '';
+            let levelClass = '';
+            let levelText = '';
+            
+            if (totalScore <= 10) {
+                depressionLevel = '无明显抑郁';
+                levelClass = 'level-normal';
+                levelText = '无明显抑郁症状';
+            } else if (totalScore <= 20) {
+                depressionLevel = '轻度抑郁';
+                levelClass = 'level-mild';
+                levelText = '轻度抑郁症状';
+            } else if (totalScore <= 40) {
+                depressionLevel = '中度抑郁';
+                levelClass = 'level-moderate';
+                levelText = '中度抑郁症状';
+            } else {
+                depressionLevel = '重度抑郁';
+                levelClass = 'level-severe';
+                levelText = '重度抑郁症状';
+            }
+            
+            const resultLevelElement = document.getElementById('result-level');
+            resultLevelElement.textContent = depressionLevel;
+            resultLevelElement.className = `result-level ${levelClass}`;
+            
+            // 生成维度解读
+            generateDimensionInterpretation('emotion', emotionScore);
+            generateDimensionInterpretation('cognition', cognitionScore);
+            generateDimensionInterpretation('physical', physicalScore);
+            generateDimensionInterpretation('behavior', behaviorScore);
+            
+            // 生成总体评估
+            generateOverallInterpretation(totalScore, depressionLevel);
+            
+            // 生成建议
+            generateRecommendations(totalScore, emotionScore, cognitionScore, physicalScore, behaviorScore);
+            
+            // 生成雷达图
+            generateRadarChart(emotionScore, cognitionScore, physicalScore, behaviorScore);
+        }
+        
+        // 生成总体评估
+        function generateOverallInterpretation(totalScore, depressionLevel) {
+            let overallHTML = '';
+            
+            if (totalScore <= 10) {
+                overallHTML = `
+                    <p>您的总体抑郁情绪筛查得分为 <strong>${totalScore}/60</strong>，属于<strong>无明显抑郁</strong>范围。</p>
+                    <p>根据DESS-Pro抑郁情绪筛查专业量表的评估标准，您的抑郁情绪症状不明显。这通常意味着您在情绪调节、认知功能、生理状况和社会行为方面都处于相对健康的状态。</p>
+                    <p>请注意，本量表结果为近期（近2周）情绪状态的筛查，不能替代专业临床诊断。建议定期进行自我情绪监测，特别是在生活压力增加或环境变化时。</p>
+                `;
+            } else if (totalScore <= 20) {
+                overallHTML = `
+                    <p>您的总体抑郁情绪筛查得分为 <strong>${totalScore}/60</strong>，属于<strong>轻度抑郁</strong>范围。</p>
+                    <p>根据DESS-Pro抑郁情绪筛查专业量表的评估标准，您存在轻度抑郁情绪症状。这可能表现为偶尔的情绪低落、兴趣减退或精力不足，但整体功能尚未受到严重影响。</p>
+                    <p>轻度抑郁状态是早期干预的最佳时机。建议您关注情绪变化，采取积极的生活方式调整，必要时寻求专业支持。</p>
+                `;
+            } else if (totalScore <= 40) {
+                overallHTML = `
+                    <p>您的总体抑郁情绪筛查得分为 <strong>${totalScore}/60</strong>，属于<strong>中度抑郁</strong>范围。</p>
+                    <p>根据DESS-Pro抑郁情绪筛查专业量表的评估标准，您存在中度抑郁情绪症状。这可能表现为较明显的情绪低落、兴趣丧失、认知功能下降和/或躯体症状，对日常生活功能产生一定影响。</p>
+                    <p>中度抑郁状态需要积极干预。建议您尽快寻求专业评估和支持，结合生活方式调整和心理干预，防止症状进一步加重。</p>
+                `;
+            } else {
+                overallHTML = `
+                    <p>您的总体抑郁情绪筛查得分为 <strong>${totalScore}/60</strong>，属于<strong>重度抑郁</strong>范围。</p>
+                    <p>根据DESS-Pro抑郁情绪筛查专业量表的评估标准，您存在重度抑郁情绪症状。这可能表现为严重的情绪痛苦、功能显著受损，并可能伴有自杀意念或行为。</p>
+                    <p><strong>重度抑郁状态需要立即专业干预。</strong>建议您尽快联系心理健康专业人士或前往医院精神科就诊。请记住，抑郁症是可治疗的疾病，及时求助是康复的第一步。</p>
+                `;
+            }
+            
+            document.getElementById('overall-interpretation').innerHTML = overallHTML;
+        }
+        
+        // 生成维度解读
+        function generateDimensionInterpretation(dimension, score) {
+            let interpretation = '';
+            let details = '';
+            
+            if (score <= 3) {
+                switch(dimension) {
+                    case 'emotion':
+                        interpretation = '情绪状态稳定，无明显抑郁情绪。您最近两周的情绪体验相对平稳，能够正常感受到愉悦和满足感，情绪波动在正常范围内。';
+                        details = '情绪核心维度评估个体在抑郁情绪核心症状方面的表现，包括情绪低落、兴趣丧失、易怒烦躁、无望感和快感缺失五个方面。';
+                        break;
+                    case 'cognition':
+                        interpretation = '思维清晰，无明显负面认知模式。您的注意力集中能力良好，能够保持积极的自我评价，对未来持有合理预期，无明显自责或悲观思维。';
+                        details = '认知维度评估抑郁相关的认知症状，包括自责内疚、注意力困难、负面思维、自卑感和无价值感五个方面。';
+                        break;
+                    case 'physical':
+                        interpretation = '生理功能正常，无明显躯体症状。您的睡眠质量、食欲和精力水平均处于正常范围，无明显不明原因的身体不适或疼痛。';
+                        details = '生理维度评估抑郁相关的躯体症状，包括睡眠障碍、食欲变化、精力不足、躯体疼痛和性功能减退五个方面。';
+                        break;
+                    case 'behavior':
+                        interpretation = '行为活动正常，社会功能良好。您能够维持正常的社交活动和生活节奏，无明显回避行为或效率下降，无自伤风险或物质滥用行为。';
+                        details = '行为维度评估抑郁相关的行为表现，包括社交回避、活动减少、效率下降、自伤意念和物质依赖五个方面。';
+                        break;
+                }
+            } else if (score <= 7) {
+                switch(dimension) {
+                    case 'emotion':
+                        interpretation = '情绪偶有低落，但整体可控。您可能偶尔感到情绪不佳或兴趣减退，但大多数时间能够保持相对稳定的情绪状态，整体功能影响较小。';
+                        details = '情绪核心维度评估个体在抑郁情绪核心症状方面的表现，包括情绪低落、兴趣丧失、易怒烦躁、无望感和快感缺失五个方面。';
+                        break;
+                    case 'cognition':
+                        interpretation = '偶尔出现负面思维，但能自我调节。您可能有时会感到注意力不集中或自我怀疑，但通常能够通过自我调节或外部支持恢复积极思维。';
+                        details = '认知维度评估抑郁相关的认知症状，包括自责内疚、注意力困难、负面思维、自卑感和无价值感五个方面。';
+                        break;
+                    case 'physical':
+                        interpretation = '生理功能轻微异常。您可能偶尔出现睡眠问题、食欲变化或精力不足，但这些症状较为轻微，对日常功能影响有限。';
+                        details = '生理维度评估抑郁相关的躯体症状，包括睡眠障碍、食欲变化、精力不足、躯体疼痛和性功能减退五个方面。';
+                        break;
+                    case 'behavior':
+                        interpretation = '社会活动轻微减少。您可能偶尔回避社交或减少活动，但整体社会功能保持良好，无明显功能损害。';
+                        details = '行为维度评估抑郁相关的行为表现，包括社交回避、活动减少、效率下降、自伤意念和物质依赖五个方面。';
+                        break;
+                }
+            } else if (score <= 11) {
+                switch(dimension) {
+                    case 'emotion':
+                        interpretation = '情绪低落较明显，愉悦感减少。您可能经常感到情绪低落、兴趣减退，体验到明显的情绪痛苦，对日常活动的影响开始显现。';
+                        details = '情绪核心维度评估个体在抑郁情绪核心症状方面的表现，包括情绪低落、兴趣丧失、易怒烦躁、无望感和快感缺失五个方面。';
+                        break;
+                    case 'cognition':
+                        interpretation = '负面思维模式较明显，影响日常判断。您可能经常出现自责、悲观或注意力困难，这些认知症状开始影响您的决策能力和工作效率。';
+                        details = '认知维度评估抑郁相关的认知症状，包括自责内疚、注意力困难、负面思维、自卑感和无价值感五个方面。';
+                        break;
+                    case 'physical':
+                        interpretation = '生理症状较明显，影响日常生活。您可能经常出现睡眠障碍、食欲变化或持续疲劳，这些躯体症状开始影响您的日常功能和生活质量。';
+                        details = '生理维度评估抑郁相关的躯体症状，包括睡眠障碍、食欲变化、精力不足、躯体疼痛和性功能减退五个方面。';
+                        break;
+                    case 'behavior':
+                        interpretation = '社会活动明显减少，回避行为增多。您可能明显减少社交和工作活动，出现效率下降，开始影响您的社会功能和日常责任。';
+                        details = '行为维度评估抑郁相关的行为表现，包括社交回避、活动减少、效率下降、自伤意念和物质依赖五个方面。';
+                        break;
+                }
+            } else {
+                switch(dimension) {
+                    case 'emotion':
+                        interpretation = '情绪低落严重，几乎无法感受愉悦。您可能体验到深度的情绪痛苦，兴趣完全丧失，情绪症状严重影响了您的生活质量。';
+                        details = '情绪核心维度评估个体在抑郁情绪核心症状方面的表现，包括情绪低落、兴趣丧失、易怒烦躁、无望感和快感缺失五个方面。';
+                        break;
+                    case 'cognition':
+                        interpretation = '严重负面认知，自我评价极低。您可能出现严重的自责、无价值感或绝望思维，认知功能受到显著损害，可能伴有自杀意念。';
+                        details = '认知维度评估抑郁相关的认知症状，包括自责内疚、注意力困难、负面思维、自卑感和无价值感五个方面。';
+                        break;
+                    case 'physical':
+                        interpretation = '严重生理症状，明显影响功能。您可能出现严重的睡眠障碍、食欲显著改变或持续疲劳，躯体症状显著影响了您的日常功能。';
+                        details = '生理维度评估抑郁相关的躯体症状，包括睡眠障碍、食欲变化、精力不足、躯体疼痛和性功能减退五个方面。';
+                        break;
+                    case 'behavior':
+                        interpretation = '严重社会退缩，可能有自伤风险。您可能出现明显的社会回避、活动显著减少或功能严重受损，可能伴有自伤行为或物质滥用。';
+                        details = '行为维度评估抑郁相关的行为表现，包括社交回避、活动减少、效率下降、自伤意念和物质依赖五个方面。';
+                        break;
+                }
+            }
+            
+            document.getElementById(`${dimension}-interpretation`).textContent = interpretation;
+            document.getElementById(`${dimension}-details`).textContent = details;
+        }
+        
+        // 生成建议
+        function generateRecommendations(totalScore, emotionScore, cognitionScore, physicalScore, behaviorScore) {
+            const recommendationsElement = document.getElementById('recommendations');
+            const actionPlanElement = document.getElementById('action-plan');
+            let recommendationsHTML = '';
+            let actionPlanHTML = '';
+            
+            // 根据总分生成不同级别的建议
+            if (totalScore <= 10) {
+                recommendationsHTML = `
+                    <ul class="recommendations-list">
+                        <li>
+                            <i class="fas fa-heart rec-icon"></i>
+                            <div><strong>情绪状态良好：</strong>基于您的测试结果，您当前无明显抑郁症状。继续保持健康的生活方式对维持良好心理状态至关重要。</div>
+                        </li>
+                        <li>
+                            <i class="fas fa-apple-alt rec-icon"></i>
+                            <div><strong>维持健康基础：</strong>保持规律作息（7-9小时睡眠），均衡饮食（富含Omega-3的食物），每周150分钟中等强度运动。</div>
+                        </li>
+                        <li>
+                            <i class="fas fa-users rec-icon"></i>
+                            <div><strong>强化社会支持：</strong>每周至少与家人朋友深度交流2-3次，参与1项社交活动，建立强大的社会支持系统。</div>
+                        </li>
+                    </ul>
+                `;
+                
+                actionPlanHTML = `
+                    <p><strong>情绪管理：</strong>每周进行至少3次正念冥想练习，每次10-15分钟，帮助保持情绪稳定。</p>
+                    <p><strong>认知训练：</strong>每天记录3件积极的事情，培养感恩心态，对抗潜在负面思维模式。</p>
+                    <p><strong>生理健康：</strong>保持规律作息（每天7-9小时睡眠），每周进行150分钟中等强度运动。</p>
+                    <p><strong>行为激活：</strong>每周参与至少1项社交活动，与家人朋友保持定期联系。</p>
+                    <p><strong>自我监测：</strong>每月使用本量表进行1次情绪状态自我评估，及时发现变化趋势。</p>
+                `;
+            } else if (totalScore <= 20) {
+                recommendationsHTML = `
+                    <ul class="recommendations-list">
+                        <li>
+                            <i class="fas fa-heartbeat rec-icon"></i>
+                            <div><strong>轻度抑郁症状：</strong>您有轻度抑郁症状，建议积极采取干预措施，防止症状加重。早期干预效果最佳。</div>
+                        </li>
+                        <li>
+                            <i class="fas fa-calendar-check rec-icon"></i>
+                            <div><strong>建立规律生活：</strong>制定每日作息表，固定起床、用餐、运动时间，增加生活掌控感和结构感。</div>
+                        </li>
+                        <li>
+                            <i class="fas fa-hands-helping rec-icon"></i>
+                            <div><strong>寻求社会支持：</strong>考虑参加支持性团体或进行短期心理咨询（如4-6次CBT咨询），获得专业指导。</div>
+                        </li>
+                    </ul>
+                `;
+                
+                actionPlanHTML = `
+                    <p><strong>情绪管理：</strong>每天进行10-15分钟正念冥想，学习情绪识别和调节技巧，减少情绪波动。</p>
+                    <p><strong>认知调整：</strong>识别自动负性思维，每天记录3件积极事件和1个成功体验，挑战非理性信念。</p>
+                    <p><strong>生理健康：</strong>建立规律作息（固定时间起床和睡觉），确保7-8小时睡眠，每周至少3次30分钟有氧运动。</p>
+                    <p><strong>行为激活：</strong>每天安排1项愉悦活动（如听音乐、散步）和1项成就活动（如完成小任务），逐步恢复兴趣。</p>
+                    <p><strong>专业支持：</strong>考虑预约1-2次心理咨询，学习应对技巧，评估是否需要进一步干预。</p>
+                `;
+            } else if (totalScore <= 40) {
+                recommendationsHTML = `
+                    <ul class="recommendations-list">
+                        <li>
+                            <i class="fas fa-exclamation-triangle rec-icon"></i>
+                            <div><strong>中度抑郁症状：</strong>您有中度抑郁症状，建议尽快寻求专业帮助。综合干预方案效果最佳。</div>
+                        </li>
+                        <li>
+                            <i class="fas fa-user-md rec-icon"></i>
+                            <div><strong>专业评估：</strong>建议1-2周内预约精神科医生或临床心理师进行全面评估，考虑药物治疗与心理治疗结合。</div>
+                        </li>
+                        <li>
+                            <i class="fas fa-shield-alt rec-icon"></i>
+                            <div><strong>危机预防：</strong>制定安全计划，列出紧急联系人，移除环境中可能的自伤工具，确保安全环境。</div>
+                        </li>
+                    </ul>
+                `;
+                
+                actionPlanHTML = `
+                    <p><strong>专业干预：</strong>尽快预约专业评估，考虑药物治疗（如SSRI类抗抑郁药）联合心理治疗（如CBT、IPT）。</p>
+                    <p><strong>情绪管理：</strong>每天进行正念练习，学习情绪耐受技巧，建立情绪危机应对计划。</p>
+                    <p><strong>认知重构：</strong>在专业指导下进行认知行为治疗，识别和改变负面思维模式，建立适应性认知。</p>
+                    <p><strong>生理调节：</strong>在医生指导下管理睡眠和食欲问题，建立规律作息，适度进行轻度运动。</p>
+                    <p><strong>行为计划：</strong>制定渐进式行为激活计划，从简单活动开始，逐步恢复社会功能和日常责任。</p>
+                `;
+            } else {
+                recommendationsHTML = `
+                    <ul class="recommendations-list">
+                        <li>
+                            <i class="fas fa-exclamation-circle rec-icon"></i>
+                            <div><strong>重度抑郁症状：</strong>您有重度抑郁症状，建议立即寻求专业医疗帮助。紧急干预至关重要。</div>
+                        </li>
+                        <li>
+                            <i class="fas fa-ambulance rec-icon"></i>
+                            <div><strong>紧急就医：</strong>建议24小时内前往医院精神科或心理科就诊，严重时考虑住院治疗确保安全。</div>
+                        </li>
+                        <li>
+                            <i class="fas fa-user-shield rec-icon"></i>
+                            <div><strong>安全第一：</strong>请确保身边有家人或朋友陪伴，移除所有可能用于自我伤害的物品，制定24小时安全计划。</div>
+                        </li>
+                    </ul>
+                `;
+                
+                actionPlanHTML = `
+                    <p><strong>紧急干预：</strong>立即联系心理健康专业人士或前往急诊，考虑住院治疗确保安全。</p>
+                    <p><strong>安全计划：</strong>制定详细安全计划，包括紧急联系人列表、安全环境设置和危机应对步骤。</p>
+                    <p><strong>药物治疗：</strong>在精神科医生指导下开始抗抑郁药物治疗，可能需要联合用药或强化治疗。</p>
+                    <p><strong>强化治疗：</strong>考虑强化心理治疗（如CBT、DBT）或电休克治疗（ECT），治疗周期通常需要6-12个月。</p>
+                    <p><strong>社会支持：</strong>建立强大的支持系统，包括家人、朋友和专业团队，确保24小时可获得支持。</p>
+                `;
+            }
+            
+            recommendationsElement.innerHTML = recommendationsHTML;
+            actionPlanElement.innerHTML = actionPlanHTML;
+        }
+        
+        // 生成雷达图
+        function generateRadarChart(emotionScore, cognitionScore, physicalScore, behaviorScore) {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            
+            // 如果已有图表，先销毁
+            if (radarChart) {
+                radarChart.destroy();
+            }
+            
+            // 计算标准化分数（0-100%）
+            const normalize = (score) => (score / 15) * 100;
+            
+            radarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['情绪核心', '认知功能', '生理症状', '行为表现'],
+                    datasets: [{
+                        label: '维度得分',
+                        data: [
+                            normalize(emotionScore),
+                            normalize(cognitionScore),
+                            normalize(physicalScore),
+                            normalize(behaviorScore)
+                        ],
+                        backgroundColor: 'rgba(74, 111, 165, 0.2)',
+                        borderColor: 'rgba(74, 111, 165, 0.8)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(74, 111, 165, 1)',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 1,
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 14,
+                                    weight: '600'
+                                },
+                                color: '#333'
+                            },
+                            ticks: {
+                                display: false,
+                                maxTicksLimit: 5
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.dataset.label || '';
+                                    const value = context.raw;
+                                    const dimensionIndex = context.dataIndex;
+                                    const dimensionNames = ['情绪核心', '认知功能', '生理症状', '行为表现'];
+                                    const rawScores = [emotionScore, cognitionScore, physicalScore, behaviorScore];
+                                    
+                                    return `${dimensionNames[dimensionIndex]}: ${rawScores[dimensionIndex]}/15 (${value.toFixed(0)}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 保存结果为图片
+        document.getElementById('save-result').addEventListener('click', () => {
+            const resultContent = document.querySelector('.result-content');
+            
+            // 临时隐藏不需要保存的按钮
+            const buttons = document.querySelector('.result-buttons');
+            const footer = document.querySelector('.footer');
+            const originalDisplay = [];
+            
+            [buttons, footer].forEach(element => {
+                originalDisplay.push(element.style.display);
+                element.style.display = 'none';
+            });
+            
+            // 使用html2canvas生成图片
+            html2canvas(resultContent, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#ffffff'
+            }).then(canvas => {
+                // 恢复显示
+                [buttons, footer].forEach((element, index) => {
+                    element.style.display = originalDisplay[index];
+                });
+                
+                // 创建下载链接
+                const link = document.createElement('a');
+                link.download = `DESS-Pro抑郁筛查报告_${new Date().toISOString().slice(0,10)}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        });
+        
+        // 回到首页
+        document.getElementById('back-to-home').addEventListener('click', () => {
+            resultPage.classList.remove('active');
+            homePage.classList.add('active');
+            
+            // 重置测试状态
+            currentQuestionIndex = 0;
+            answers = new Array(questions.length).fill(null);
+        });
+        
+        // 更多测试按钮
+        document.getElementById('more-tests').addEventListener('click', () => {
+            window.open('https://xhslink.com/m/genPHyd6j0', '_blank');
+        });
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            // 确保首页显示
+            homePage.classList.add('active');
+            testPage.classList.remove('active');
+            resultPage.classList.remove('active');
+            
+            // 移除不再需要的深度咨询相关元素
+            const consultAlert = document.getElementById('consult-alert');
+            if (consultAlert) {
+                consultAlert.parentNode.removeChild(consultAlert);
+            }
+        });
+    </script>
+</body>
+</html>
